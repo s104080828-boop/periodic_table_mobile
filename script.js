@@ -1,3 +1,4 @@
+
 const CATEGORY_CLASS = {
   "鹼金屬":"alkali",
   "鹼土金屬":"alkaline",
@@ -19,7 +20,6 @@ const STORAGE_KEYS = {
 };
 
 const table = document.getElementById('periodicTable');
-const miniTable = document.getElementById('miniPeriodicTable');
 const previewCard = document.getElementById('previewCard');
 const searchInput = document.getElementById('searchInput');
 const familyFilter = document.getElementById('familyFilter');
@@ -32,11 +32,14 @@ const viewBar = document.getElementById('viewBar');
 const quizScore = document.getElementById('quizScore');
 const badgeWrap = document.getElementById('badgeWrap');
 const mobileElementList = document.getElementById('mobileElementList');
-const filterResultList = document.getElementById('filterResultList');
-const filterCount = document.getElementById('filterCount');
 const tablePanel = document.querySelector('.table-panel');
 const quizBtn = document.getElementById('quizBtn');
 const quizArea = document.getElementById('quizArea');
+
+const modeText = {
+  junior: '國中版',
+  senior: '高中版'
+};
 
 function loadViewed(){
   try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.viewed) || '[]'); } catch { return []; }
@@ -47,17 +50,18 @@ function setQuizScore(v){ localStorage.setItem(STORAGE_KEYS.quizScore, String(v)
 function getMode(){ return localStorage.getItem(STORAGE_KEYS.mode) || 'junior'; }
 function setMode(mode){ localStorage.setItem(STORAGE_KEYS.mode, mode); }
 
+function encodeSVG(svg){ return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg); }
 function getCategoryTone(cat){
-  return {
+  const map = {
     '鹼金屬':'#ffe7c2','鹼土金屬':'#e6f4d7','過渡金屬':'#dfe9ff','後過渡金屬':'#f1e8ff',
     '類金屬':'#ffe6f0','非金屬':'#e3fbff','鹵素':'#fff0cf','惰性氣體':'#e9f0ff',
     '鑭系元素':'#fbe6ff','錒系元素':'#ffe4e4','其他金屬':'#ececec'
-  }[cat] || '#f4f4f4';
+  };
+  return map[cat] || '#f4f4f4';
 }
-function encodeSVG(svg){ return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg); }
 function elementSvg(e){
   const bg = getCategoryTone(e.category);
-  return encodeSVG(`<svg xmlns="http://www.w3.org/2000/svg" width="520" height="280" viewBox="0 0 520 280">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="520" height="280" viewBox="0 0 520 280">
     <rect width="520" height="280" rx="28" fill="${bg}"/>
     <circle cx="95" cy="90" r="52" fill="white" fill-opacity="0.66"/>
     <circle cx="425" cy="212" r="70" fill="white" fill-opacity="0.38"/>
@@ -66,11 +70,11 @@ function elementSvg(e){
     <text x="42" y="214" font-size="24" font-family="Arial, Noto Sans TC, sans-serif" fill="#334155">Atomic No. ${e.number}</text>
     <text x="42" y="246" font-size="22" font-family="Arial, Noto Sans TC, sans-serif" fill="#475569">${e.nameEn}</text>
     <text x="370" y="66" font-size="22" font-family="Arial, Noto Sans TC, sans-serif" fill="#475569">${e.category}</text>
-  </svg>`);
+  </svg>`;
+  return encodeSVG(svg);
 }
+
 function getElementKeyText(e){ return `${e.number} ${e.nameZh} ${e.nameEn} ${e.symbol}`.toLowerCase(); }
-function formatPeriod(period){ return period <= 7 ? `第 ${period} 週期` : (period === 8 ? '鑭系' : '錒系'); }
-function getElementByNumber(number){ return ELEMENTS.find(item => item.number === number); }
 
 const categories = [...new Set(ELEMENTS.map(e => e.category))];
 categories.forEach(cat => {
@@ -78,7 +82,6 @@ categories.forEach(cat => {
   op.value = cat;
   op.textContent = cat;
   familyFilter.appendChild(op);
-
   const item = document.createElement('div');
   item.className = 'legend-item';
   item.innerHTML = `<span class="legend-color ${CATEGORY_CLASS[cat]}"></span><span>${cat}</span>`;
@@ -88,21 +91,18 @@ categories.forEach(cat => {
 function previewSummary(e, mode){
   return mode === 'junior'
     ? `${e.summary} 先記住它屬於${e.category}，再連到生活中的常見用途。`
-    : `${e.summary} 高中可進一步觀察它在 ${formatPeriod(e.period)} 與族群中的位置，連結電子排列、反應性與材料性質。`;
+    : `${e.summary} 高中可進一步觀察其在第 ${e.period > 7 ? '鑭／錒系' : e.period + ' 週期'}中的位置，連結電子排列、反應性與材料性質。`;
 }
 
-function markViewed(number){
+function renderPreview(number){
+  const e = ELEMENTS.find(item => item.number === number);
+  if(!e) return;
+  const mode = getMode();
   const viewed = loadViewed();
   viewed.push(number);
   saveViewed(viewed);
   updateDashboard();
-}
 
-function renderPreview(number){
-  const e = getElementByNumber(number);
-  if(!e) return;
-  markViewed(number);
-  const mode = getMode();
   previewCard.innerHTML = `
     <div class="preview-media"><img src="${elementSvg(e)}" alt="${e.nameZh} ${e.symbol} 示意圖"></div>
     <div class="preview-head">
@@ -114,162 +114,73 @@ function renderPreview(number){
     </div>
     <p class="preview-text">${previewSummary(e, mode)}</p>
     <div class="mini-stats">
-      <div><span>週期</span><strong>${formatPeriod(e.period)}</strong></div>
-      <div><span>代表化合物</span><strong>${e.compounds?.[0] || '—'}</strong></div>
+      <div><span>週期</span><strong>${e.period <= 7 ? `第 ${e.period} 週期` : (e.period === 8 ? '鑭系' : '錒系')}</strong></div>
+      <div><span>代表化合物</span><strong>${e.compounds[0] || '—'}</strong></div>
     </div>
     <a class="detail-link" href="detail.html?element=${e.number}">開啟完整介紹頁</a>
   `;
-
-  document.querySelectorAll('[data-number]').forEach(node => {
-    node.classList.toggle('is-selected', Number(node.dataset.number) === number);
-  });
-}
-
-function createElementButton(data, className='element'){ 
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = `${className} ${CATEGORY_CLASS[data.category]}`;
-  btn.dataset.number = data.number;
-  btn.dataset.category = data.category;
-  btn.dataset.search = getElementKeyText(data);
-  btn.setAttribute('aria-label', `${data.nameZh} ${data.symbol}`);
-  btn.innerHTML = `
-    <div class="number">${data.number}</div>
-    <div class="name">${data.nameZh}</div>
-    <div class="symbol">${data.symbol}</div>
-  `;
-  btn.addEventListener('mouseenter', () => renderPreview(data.number));
-  btn.addEventListener('focus', () => renderPreview(data.number));
-  btn.addEventListener('click', () => {
-    renderPreview(data.number);
-    window.location.href = `detail.html?element=${data.number}`;
-  });
-  return btn;
-}
-
-function buildCellMap(){
-  const cellMap = {};
-  ELEMENTS.forEach(e => { cellMap[`${e.period}-${e.group}`] = e; });
-  return cellMap;
 }
 
 function renderTable(){
-  const cellMap = buildCellMap();
+  const cellMap = {};
+  ELEMENTS.forEach(e => { cellMap[`${e.period}-${e.group}`] = e; });
   table.innerHTML = '';
   for(let row=1; row<=9; row++){
     for(let col=1; col<=18; col++){
       const data = cellMap[`${row}-${col}`];
+      const cell = document.createElement(data ? 'button' : 'div');
       if(!data){
-        const empty = document.createElement('div');
-        empty.className = 'empty-cell';
-        table.appendChild(empty);
-      } else {
-        table.appendChild(createElementButton(data, 'element'));
+        cell.className = 'empty-cell';
+        table.appendChild(cell);
+        continue;
       }
+      cell.className = `element ${CATEGORY_CLASS[data.category]}`;
+      cell.dataset.number = data.number;
+      cell.dataset.category = data.category;
+      cell.dataset.search = getElementKeyText(data);
+      cell.innerHTML = `
+        <div class="number">${data.number}</div>
+        <div class="name">${data.nameZh}</div>
+        <div class="symbol">${data.symbol}</div>
+      `;
+      cell.addEventListener('mouseenter', () => renderPreview(data.number));
+      cell.addEventListener('focus', () => renderPreview(data.number));
+      cell.addEventListener('click', () => {
+        renderPreview(data.number);
+        window.location.href = `detail.html?element=${data.number}`;
+      });
+      table.appendChild(cell);
     }
   }
-}
-
-function renderMiniTable(){
-  const cellMap = buildCellMap();
-  miniTable.innerHTML = '';
-  for(let row=1; row<=9; row++){
-    for(let col=1; col<=18; col++){
-      const data = cellMap[`${row}-${col}`];
-      if(!data){
-        const empty = document.createElement('div');
-        empty.className = 'mini-empty';
-        miniTable.appendChild(empty);
-      } else {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `mini-element ${CATEGORY_CLASS[data.category]}`;
-        btn.dataset.number = data.number;
-        btn.title = `${data.nameZh} ${data.symbol}`;
-        btn.innerHTML = `<span class="mini-name">${data.nameZh}</span><span class="mini-symbol">${data.symbol}</span>`;
-        btn.addEventListener('click', () => {
-          renderPreview(data.number);
-          document.getElementById('previewCard').scrollIntoView({behavior:'smooth', block:'start'});
-        });
-        miniTable.appendChild(btn);
-      }
-    }
-  }
-}
-
-function renderMobileList(list){
-  mobileElementList.innerHTML = list.map(e => `
-    <button type="button" class="mobile-element-card ${CATEGORY_CLASS[e.category]}" data-number="${e.number}" data-category="${e.category}" data-search="${getElementKeyText(e)}">
-      <div class="mobile-top"><span>${e.nameZh}</span><strong>${e.symbol}</strong></div>
-      <div class="mobile-bottom">${e.nameEn} · ${e.number} · ${e.category}</div>
-    </button>
-  `).join('');
-  mobileElementList.querySelectorAll('.mobile-element-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const number = Number(card.dataset.number);
-      renderPreview(number);
-      window.location.href = `detail.html?element=${number}`;
-    });
-  });
-}
-
-function getFilteredElements(){
-  const keyword = searchInput.value.trim().toLowerCase();
-  const family = familyFilter.value;
-  return ELEMENTS.filter(e => {
-    const matchesKeyword = !keyword || getElementKeyText(e).includes(keyword);
-    const matchesFamily = family === 'all' || e.category === family;
-    return matchesKeyword && matchesFamily;
-  });
-}
-
-function renderFilterResults(list){
-  filterCount.textContent = `${list.length} 個`;
-  if(!list.length){
-    filterResultList.innerHTML = '<span class="empty-tip">目前沒有符合條件的元素。</span>';
-    return;
-  }
-  filterResultList.innerHTML = list.map(e => `
-    <button type="button" class="filter-chip ${CATEGORY_CLASS[e.category]}" data-number="${e.number}">
-      <span>${e.nameZh}</span><strong>${e.symbol}</strong>
-    </button>
-  `).join('');
-  filterResultList.querySelectorAll('.filter-chip').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const number = Number(btn.dataset.number);
-      renderPreview(number);
-      previewCard.scrollIntoView({behavior:'smooth', block:'start'});
-    });
-  });
 }
 
 function applyFilters(){
-  const filtered = getFilteredElements();
-  const visibleNumbers = new Set(filtered.map(e => e.number));
-  document.querySelectorAll('.element, .mobile-element-card, .mini-element').forEach(card => {
-    const visible = visibleNumbers.has(Number(card.dataset.number));
-    card.classList.toggle('hidden', !visible);
+  const keyword = searchInput.value.trim().toLowerCase();
+  const family = familyFilter.value;
+  const cards = [...document.querySelectorAll('.element')];
+  cards.forEach(card => {
+    const matchesKeyword = !keyword || card.dataset.search.includes(keyword);
+    const matchesFamily = family === 'all' || card.dataset.category === family;
+    card.classList.toggle('hidden', !(matchesKeyword && matchesFamily));
   });
-  renderFilterResults(filtered);
 }
 
 function chooseRandomVisible(){
-  const filtered = getFilteredElements();
-  if(!filtered.length) return;
-  const pick = filtered[Math.floor(Math.random() * filtered.length)];
-  renderPreview(pick.number);
-  const button = document.querySelector(`.element[data-number="${pick.number}"]`) || document.querySelector(`.mobile-element-card[data-number="${pick.number}"]`);
-  button?.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
+  const visible = [...document.querySelectorAll('.element:not(.hidden)')];
+  if(!visible.length) return;
+  const pick = visible[Math.floor(Math.random()*visible.length)];
+  renderPreview(Number(pick.dataset.number));
+  pick.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
 }
 
 function getBadges(viewed, score){
   return [
-    { label:'新手探索者', ok:viewed >= 5 },
-    { label:'好奇觀察家', ok:viewed >= 20 },
-    { label:'元素收藏家', ok:viewed >= 50 },
-    { label:'理化暖身', ok:score >= 3 },
-    { label:'推理加速中', ok:score >= 8 },
-    { label:'元素達人', ok:score >= 15 }
+    {key:'starter', label:'新手探索者', ok:viewed >= 5},
+    {key:'curious', label:'好奇觀察家', ok:viewed >= 20},
+    {key:'collector', label:'元素收藏家', ok:viewed >= 50},
+    {key:'quiz1', label:'理化暖身', ok:score >= 3},
+    {key:'quiz2', label:'推理加速中', ok:score >= 8},
+    {key:'quiz3', label:'元素達人', ok:score >= 15}
   ];
 }
 
@@ -285,12 +196,19 @@ function updateDashboard(){
 function resetAll(){
   searchInput.value = '';
   familyFilter.value = 'all';
-  renderPreview(6);
   applyFilters();
+  previewCard.innerHTML = `
+    <div class="placeholder">
+      <div class="placeholder-icon">🧪</div>
+      <h2>先選一個元素吧</h2>
+      <p>例如：氫、碳、氧、鈉、矽、鐵、銅。</p>
+    </div>`;
 }
 
 function syncResponsiveMode(){
-  tablePanel?.classList.toggle('compact-mode', window.innerWidth <= 760);
+  if(!tablePanel) return;
+  const compact = window.innerWidth <= 760;
+  tablePanel.classList.toggle('compact-mode', compact);
 }
 
 const QUIZ_BANK = [
@@ -320,8 +238,10 @@ function launchQuiz(){
   quizArea.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('click', () => {
       const result = document.getElementById('quizResult');
-      if(btn.textContent === item.answer){
-        setQuizScore(getQuizScore() + 1);
+      const correct = btn.textContent === item.answer;
+      if(correct){
+        const score = getQuizScore() + 1;
+        setQuizScore(score);
         updateDashboard();
         result.textContent = '答對了，這題收進知識口袋。';
         result.className = 'quiz-result ok';
@@ -340,16 +260,17 @@ resetBtn.addEventListener('click', resetAll);
 quizBtn.addEventListener('click', launchQuiz);
 modeSwitch.addEventListener('change', (e) => {
   setMode(e.target.value);
-  const selected = document.querySelector('.is-selected');
-  renderPreview(selected ? Number(selected.dataset.number) : 6);
+  if(previewCard.querySelector('h2')){
+    const current = previewCard.querySelector('.detail-link')?.getAttribute('href');
+    const match = current && current.match(/element=(\d+)/);
+    if(match) renderPreview(Number(match[1]));
+  }
 });
 
 modeSwitch.value = getMode();
 renderTable();
-renderMiniTable();
-renderMobileList(ELEMENTS);
 updateDashboard();
 renderPreview(6);
-applyFilters();
 window.addEventListener('resize', syncResponsiveMode);
 syncResponsiveMode();
+renderMobileList(ELEMENTS);
