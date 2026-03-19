@@ -12,11 +12,26 @@
     <a class="nav-pill" href="challenge.html">闖關</a>
     <a class="nav-pill" href="index.html">首頁</a>
   </nav>
+
   <header class="hero">
     <div class="hero-copy">
       <div class="hero-kicker">國中／高中理化互動式學習</div>
       <h1>元素週期表學習地圖</h1>
-      <p>首頁先用中文元素週期表建立整體概念，再點入各元素頁面，學習原子量、常見用途、代表性化合物與課程重點。</p>
+      <p>先用縮小版元素週期表建立空間感，再用搜尋與族群篩選快速找到元素；點擊任一元素即可查看原子量、應用、常見化合物與課程重點。</p>
+
+      <section class="mini-table-card">
+        <div class="mini-head">
+          <div>
+            <h2>元素週期表縮小版</h2>
+            <p>點一下任一格即可同步預覽；更容易掌握元素在表中的相對位置。</p>
+          </div>
+          <div class="mini-legend-note">上：中文　下：符號</div>
+        </div>
+        <div class="mini-table-wrap">
+          <div class="mini-table-grid" id="miniPeriodicTable"></div>
+        </div>
+      </section>
+
       <div class="toolbar">
         <input id="searchInput" type="search" placeholder="搜尋元素：中文／英文／符號／原子序">
         <select id="familyFilter"><option value="all">全部族群</option></select>
@@ -27,7 +42,17 @@
         <button id="randomBtn">隨機抽元素</button>
         <button id="resetBtn">重設</button>
       </div>
+
+      <section class="filter-result-card">
+        <div class="filter-result-head">
+          <h2>目前篩選到的元素</h2>
+          <span id="filterCount">0 個</span>
+        </div>
+        <p class="filter-result-note">選擇族群或輸入關鍵字後，下方會直接列出對應元素，方便手機快速瀏覽與點選。</p>
+        <div class="filter-chip-wrap" id="filterResultList"></div>
+      </section>
     </div>
+
     <div class="dashboard-card">
       <h2>學習進度</h2>
       <div class="progress-stat"><span>已看元素</span><strong id="viewedCount">0 / 118</strong></div>
@@ -46,7 +71,7 @@
         </div>
         <div class="legend" id="legend"></div>
       </div>
-      <div class="mobile-hint">手機版會自動切換成卡片式瀏覽，較容易點選與閱讀。</div>
+      <div class="mobile-hint">手機版會同時提供卡片式元素清單與篩選結果列，操作更直覺。</div>
       <div class="table-wrap">
         <div class="table-grid" id="periodicTable"></div>
       </div>
