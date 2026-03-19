@@ -3,75 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>元素週期表互動式學習｜GitHub Pages</title>
+  <title>元素週期表互動式學習</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <header class="hero">
-    <div class="hero-copy">
-      <div class="hero-kicker">國中／高中理化互動式學習</div>
-      <h1>元素週期表學習地圖</h1>
-      <p>首頁先用中文元素週期表建立整體概念，再點入各元素頁面，學習原子量、常見用途、代表性化合物與課程重點。</p>
-      <div class="toolbar">
-        <input id="searchInput" type="search" placeholder="搜尋元素：中文／英文／符號／原子序">
-        <select id="familyFilter"><option value="all">全部族群</option></select>
-        <select id="modeSwitch" aria-label="學習模式切換">
-          <option value="junior">國中版</option>
-          <option value="senior">高中版</option>
-        </select>
-        <button id="randomBtn">隨機抽元素</button>
-        <button id="resetBtn">重設</button>
+<body class="landing-body">
+  <main class="landing-shell">
+    <section class="landing-hero card">
+      <div class="hero-kicker">GitHub Pages 互動式理化學習</div>
+      <h1>元素週期表</h1>
+      <p class="landing-lead">分成 <strong>學習</strong> 與 <strong>闖關</strong> 兩條路線。先建立元素位置、原子量、用途與常見化合物的概念，再用題目把記憶真正鎖住。</p>
+      <div class="landing-actions">
+        <a class="landing-main-btn" href="study.html">進入學習</a>
+        <a class="landing-sub-btn" href="challenge.html">開始闖關</a>
       </div>
-    </div>
-    <div class="dashboard-card">
-      <h2>學習進度</h2>
-      <div class="progress-stat"><span>已看元素</span><strong id="viewedCount">0 / 118</strong></div>
-      <div class="progress-bar"><span id="viewBar"></span></div>
-      <div class="progress-stat"><span>答對題數</span><strong id="quizScore">0</strong></div>
-      <div class="badge-wrap" id="badgeWrap"></div>
-    </div>
-  </header>
-
-  <main class="layout-home">
-    <section class="table-panel card">
-      <div class="section-head">
-        <div>
-          <h2>中文元素週期表</h2>
-          <p>元素名稱在上，英文符號在下。點一下就進入該元素的詳細頁。</p>
-        </div>
-        <div class="legend" id="legend"></div>
-      </div>
-      <div class="mobile-hint">手機版會自動切換成卡片式瀏覽，較容易點選與閱讀。</div>
-      <div class="table-wrap">
-        <div class="table-grid" id="periodicTable"></div>
-      </div>
-      <div class="mobile-list" id="mobileElementList"></div>
-      <div class="series-note">鑭系與錒系元素置於下方兩列。滑過可預覽，點擊可開啟完整介紹頁。</div>
+      <div class="landing-note">手機版會自動切換成更容易點選的卡片式畫面。</div>
     </section>
 
-    <aside class="side-panel">
-      <section class="card preview-card" id="previewCard">
-        <div class="placeholder">
-          <div class="placeholder-icon">🧪</div>
-          <h2>先選一個元素吧</h2>
-          <p>例如：氫、碳、氧、鈉、矽、鐵、銅。</p>
-        </div>
-      </section>
+    <section class="landing-grid">
+      <article class="mode-card card">
+        <div class="mode-icon">📘</div>
+        <h2>學習模式</h2>
+        <p>用中文週期表總覽全局，點元素進入詳細頁，查看原子序、原子量、分類、用途、常見化合物與國中／高中重點。</p>
+        <ul class="feature-list">
+          <li>中文名稱＋英文符號</li>
+          <li>搜尋、分類篩選、隨機抽元素</li>
+          <li>國中版／高中版切換</li>
+          <li>手機友善卡片介面</li>
+        </ul>
+        <a class="mode-link" href="study.html">去學習</a>
+      </article>
 
-      <section class="card quiz-card">
-        <h2>闖關挑戰</h2>
-        <p>每次隨機抽一題，累積答對可以解鎖徽章。</p>
-        <button id="quizBtn">開始出題</button>
-        <div id="quizArea"></div>
-      </section>
-    </aside>
+      <article class="mode-card card">
+        <div class="mode-icon">🏆</div>
+        <h2>闖關模式</h2>
+        <p>把元素知識變成遊戲，隨機出題，包含符號、原子序、分類與應用。每回合 10 題，會自動結算分數與稱號。</p>
+        <ul class="feature-list">
+          <li>單題即時回饋</li>
+          <li>10 題一回合</li>
+          <li>正確率與最高分紀錄</li>
+          <li>可重玩、可隨機練習</li>
+        </ul>
+        <a class="mode-link" href="challenge.html">去闖關</a>
+      </article>
+    </section>
+
+    <section class="landing-footer card">
+      <h2>建議使用方式</h2>
+      <div class="landing-steps">
+        <div><strong>1</strong><span>先在學習模式看常見元素：氫、碳、氧、鈉、鎂、鋁、矽、鐵、銅。</span></div>
+        <div><strong>2</strong><span>再用闖關模式做 10 題練習，找出最常錯的元素。</span></div>
+        <div><strong>3</strong><span>回到學習模式複習，再挑戰下一輪，效果最好。</span></div>
+      </div>
+    </section>
   </main>
-
-  <footer class="footer">
-    <p>建議資料來源：IUPAC 週期表、PubChem、Royal Society of Chemistry、臺灣自然科學領域課程綱要與教學脈絡。</p>
-  </footer>
-
   <script src="data.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>

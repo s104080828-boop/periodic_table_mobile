@@ -133,7 +133,7 @@ function renderDetail(mode){
       <div class="nav-buttons">
         <a class="nav-btn" href="detail.html?element=${Math.max(1, e.number - 1)}">上一個元素</a>
         <a class="nav-btn" href="detail.html?element=${Math.min(ELEMENTS.length, e.number + 1)}">下一個元素</a>
-        <a class="nav-btn" href="index.html">回首頁</a>
+        <a class="nav-btn" href="study.html">回首頁</a>
       </div>
     </section>
   `;

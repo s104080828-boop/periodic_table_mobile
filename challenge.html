@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>元素週期表｜闖關模式</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="challenge-body">
+  <nav class="app-nav">
+    <a class="nav-pill" href="study.html">學習</a>
+    <a class="nav-pill active" href="challenge.html">闖關</a>
+    <a class="nav-pill" href="index.html">首頁</a>
+  </nav>
+
+  <main class="challenge-shell">
+    <section class="challenge-hero card">
+      <div>
+        <div class="hero-kicker">元素週期表挑戰</div>
+        <h1>闖關模式</h1>
+        <p>每回合 10 題。系統會從元素符號、原子序、分類、用途與常見化合物中隨機出題。</p>
+      </div>
+      <div class="challenge-stats">
+        <div class="stat-card"><span>目前回合</span><strong id="roundProgress">0 / 10</strong></div>
+        <div class="stat-card"><span>本回合得分</span><strong id="roundScore">0</strong></div>
+        <div class="stat-card"><span>歷史最高分</span><strong id="bestScore">0</strong></div>
+        <div class="stat-card"><span>總答對題數</span><strong id="totalCorrect">0</strong></div>
+      </div>
+    </section>
+
+    <section class="challenge-layout">
+      <article class="card challenge-main-card">
+        <div class="challenge-controls">
+          <button id="startRoundBtn" class="landing-main-btn">開始 10 題闖關</button>
+          <button id="practiceBtn" class="landing-sub-btn">單題練習</button>
+          <button id="resetChallengeBtn" class="soft-btn">重設紀錄</button>
+        </div>
+        <div id="challengeArea" class="challenge-area">
+          <div class="placeholder">
+            <div class="placeholder-icon">⚗️</div>
+            <h2>準備好了嗎？</h2>
+            <p>按下「開始 10 題闖關」後，系統會自動出題。</p>
+          </div>
+        </div>
+      </article>
+
+      <aside class="card challenge-side-card">
+        <h2>稱號牆</h2>
+        <div class="title-wall" id="titleWall"></div>
+        <div class="challenge-tip">
+          <h3>闖關小技巧</h3>
+          <p>先記高頻元素，再記族群特徵：鹼金屬很活潑、鹵素容易成鹽、惰性氣體最穩定。記住規律，比硬背更省力。</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="challenge.js"></script>
+</body>
+</html>
